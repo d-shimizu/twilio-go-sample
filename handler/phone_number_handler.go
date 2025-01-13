@@ -22,12 +22,13 @@ type purchasePhoneNumberRequest struct {
 
 func (h *PhoneNumberHandler) PurchasePhoneNumber(w http.ResponseWriter, r *http.Request) {
 	var req purchasePhoneNumberRequest
+	var ctx = r.Context()
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	purchasedNumber, err := h.phoneNumberUseCase.PurchasePhoneNumber(req.PhoneNumber)
+	purchasedNumber, err := h.phoneNumberUseCase.PurchasePhoneNumber(ctx, req.PhoneNumber)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

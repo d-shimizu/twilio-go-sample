@@ -1,8 +1,10 @@
 package usecase
 
 import (
+	"context"
 	"fmt"
 	"localhost/twilio-go-sample/domain/model"
+	"localhost/twilio-go-sample/domain/repository"
 
 	twilioApi "github.com/twilio/twilio-go/rest/api/v2010"
 )
@@ -12,16 +14,18 @@ type PhoneNumberService interface {
 }
 
 type PhoneNumberUseCase struct {
-	twilioClient PhoneNumberService
+	twilioClient    PhoneNumberService
+	phoneNumberRepo repository.PhoneNumberRepository
 }
 
-func NewPhoneNumberUseCase(client PhoneNumberService) *PhoneNumberUseCase {
+func NewPhoneNumberUseCase(client PhoneNumberService, repo repository.PhoneNumberRepository) *PhoneNumberUseCase {
 	return &PhoneNumberUseCase{
-		twilioClient: client,
+		twilioClient:    client,
+		phoneNumberRepo: repo,
 	}
 }
 
-func (uc *PhoneNumberUseCase) PurchasePhoneNumber(phoneNumber string) (*model.PhoneNumber, error) {
+func (uc *PhoneNumberUseCase) PurchasePhoneNumber(ctx context.Context, phoneNumber string) (*model.PhoneNumber, error) {
 	resp, err := uc.twilioClient.PurchasePhoneNumber(phoneNumber)
 	if err != nil {
 		return nil, err
@@ -31,8 +35,14 @@ func (uc *PhoneNumberUseCase) PurchasePhoneNumber(phoneNumber string) (*model.Ph
 		return nil, fmt.Errorf("invalid response from Twilio: missing required fields")
 	}
 
-	return &model.PhoneNumber{
+	purchasePhoneNumber := &model.PhoneNumber{
 		AccountSid:  *resp.AccountSid,
 		PhoneNumber: *resp.PhoneNumber,
-	}, nil
+	}
+
+	if err := uc.phoneNumberRepo.Create(ctx, purchasePhoneNumber); err != nil {
+		return nil, fmt.Errorf("failed to save phone number: %w", err)
+	}
+
+	return purchasePhoneNumber, nil
 }
