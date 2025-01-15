@@ -5,20 +5,15 @@ import (
 	"fmt"
 	"localhost/twilio-go-sample/domain/model"
 	"localhost/twilio-go-sample/domain/repository"
-
-	twilioApi "github.com/twilio/twilio-go/rest/api/v2010"
+	ucrepo "localhost/twilio-go-sample/usecase/repository"
 )
 
-type PhoneNumberService interface {
-	PurchasePhoneNumber(phoneNumber string) (*twilioApi.ApiV2010IncomingPhoneNumber, error)
-}
-
 type PhoneNumberUseCase struct {
-	twilioClient    PhoneNumberService
+	twilioClient    ucrepo.PhoneNumberRepository
 	phoneNumberRepo repository.PhoneNumberRepository
 }
 
-func NewPhoneNumberUseCase(client PhoneNumberService, repo repository.PhoneNumberRepository) *PhoneNumberUseCase {
+func NewPhoneNumberUseCase(client ucrepo.PhoneNumberRepository, repo repository.PhoneNumberRepository) *PhoneNumberUseCase {
 	return &PhoneNumberUseCase{
 		twilioClient:    client,
 		phoneNumberRepo: repo,
