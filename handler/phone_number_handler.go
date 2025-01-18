@@ -38,3 +38,23 @@ func (h *PhoneNumberHandler) PurchasePhoneNumber(w http.ResponseWriter, r *http.
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(purchasedNumber)
 }
+
+func (h *PhoneNumberHandler) ListAvailablePhoneNumber(w http.ResponseWriter, r *http.Request) {
+	numberType := r.URL.Query().Get("type") // type パラメータを追加
+	if numberType == "" {
+		numberType = "local" // デフォルト値を設定
+	}
+
+	areaCode := r.URL.Query().Get("area_code")
+
+	numbers, err := h.phoneNumberUseCase.ListAvailablePhoneNumbers(r.Context(), numberType, areaCode)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"numbers": numbers,
+	})
+}

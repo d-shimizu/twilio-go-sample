@@ -48,6 +48,7 @@ func main() {
 	// ルーターの設定
 	r := mux.NewRouter()
 	r.HandleFunc("/phone-numbers/purchase", phoneNumberHandler.PurchasePhoneNumber).Methods(http.MethodPost)
+	r.HandleFunc("/phone-numbers/available", phoneNumberHandler.ListAvailablePhoneNumber).Methods(http.MethodGet)
 
 	// サーバーの起動
 	port := os.Getenv("PORT")

@@ -31,3 +31,26 @@ func (c *Client) PurchasePhoneNumber(phoneNumber string) (*twilioApi.ApiV2010Inc
 
 	return resp, nil
 }
+
+func (c *Client) ListAvailableLocalPhoneNumbers(areaCode string) (*[]twilioApi.ApiV2010AvailablePhoneNumberLocal, error) {
+	params := &twilioApi.ListAvailablePhoneNumberLocalParams{}
+	//params.SetInRegion("AR")
+	//params.SetLimit(20)
+	resp, err := c.client.Api.ListAvailablePhoneNumberLocal("US", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+func (c *Client) ListAvailableTollFreePhoneNumbers() (*[]twilioApi.ApiV2010AvailablePhoneNumberTollFree, error) {
+	params := &twilioApi.ListAvailablePhoneNumberTollFreeParams{}
+	params.SetLimit(20)
+	resp, err := c.client.Api.ListAvailablePhoneNumberTollFree("US", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
