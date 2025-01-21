@@ -45,10 +45,17 @@ func main() {
 	// ハンドラーの初期化
 	phoneNumberHandler := handler.NewPhoneNumberHandler(*phoneNumberUseCase)
 
+	// ユースケースの初期化
+	twimlUseCase := usecase.NewTwiMLUseCase()
+
+	// ハンドラーの初期化
+	twimlHandler := handler.NewTwiMLHandler(twimlUseCase)
+
 	// ルーターの設定
 	r := mux.NewRouter()
 	r.HandleFunc("/phone-numbers/purchase", phoneNumberHandler.PurchasePhoneNumber).Methods(http.MethodPost)
 	r.HandleFunc("/phone-numbers/available", phoneNumberHandler.ListAvailablePhoneNumber).Methods(http.MethodGet)
+	r.HandleFunc("/twiml/voice", twimlHandler.HandleVoice).Methods(http.MethodPost)
 
 	// サーバーの起動
 	port := os.Getenv("PORT")

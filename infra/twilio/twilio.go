@@ -54,3 +54,12 @@ func (c *Client) ListAvailableTollFreePhoneNumbers() (*[]twilioApi.ApiV2010Avail
 
 	return &resp, nil
 }
+
+func (c *Client) UpdatePhoneNumberWebhook(phoneNumberSid string, voiceUrl string) error {
+	params := &twilioApi.UpdateIncomingPhoneNumberParams{
+		VoiceUrl: &voiceUrl,
+	}
+
+	_, err := c.client.Api.UpdateIncomingPhoneNumber(phoneNumberSid, params)
+	return err
+}
